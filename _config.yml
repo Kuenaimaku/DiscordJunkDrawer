@@ -1,5 +1,5 @@
 ﻿prefix: "!"
 tokens:
-    discord: "MzE5Njk1MTA0ODExOTkxMDQw.XqzJew.IN_tVy7jqgpf5y7m91ZbY6kdaIs"
+    discord: null
 connections:
     sqlite: "Filename=./data.db"

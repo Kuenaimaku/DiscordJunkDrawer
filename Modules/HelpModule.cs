@@ -34,7 +34,7 @@ namespace DiscordJunkDrawer.Modules
                 {
                     var result = await cmd.CheckPreconditionsAsync(Context);
                     if (result.IsSuccess)
-                        description += $"{prefix}{cmd.Aliases.First()}\n";
+                        description += $"{prefix}{cmd.Aliases.First()} {string.Join(" ", cmd.Parameters.Select(p => $"[{p.Name}]"))}\n";
                 }
 
                 if (!string.IsNullOrWhiteSpace(description))

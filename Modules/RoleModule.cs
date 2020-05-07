@@ -5,6 +5,8 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using DiscordJunkDrawer.Models;
 
 namespace DiscordJunkDrawer.Modules
 {
@@ -33,8 +35,24 @@ namespace DiscordJunkDrawer.Modules
                 {
                     try
                     {
-                        var createdRole = await Context.Guild.CreateRoleAsync(roleName, GuildPermissions.None, null, false, null);
-                        await (user as IGuildUser).AddRoleAsync(createdRole);
+                        using (var db = new storageContext())
+                        {
+                            var storedGuilds = await db.DiscordGuilds.ToListAsync();
+                            var curGuild = storedGuilds.Find(guild => guild.Id == Context.Guild.Id);
+
+                            var createdRole = await Context.Guild.CreateRoleAsync(roleName, GuildPermissions.None, null, false, null);
+                            await (user as IGuildUser).AddRoleAsync(createdRole);
+
+                            DiscordRoleModel roleToAdd = new DiscordRoleModel();
+                            roleToAdd.Id = createdRole.Id;
+                            roleToAdd.Name = roleName;
+                            roleToAdd.ServerId = Context.Guild.Id;
+                            curGuild.Roles.Add(roleToAdd);    
+                            
+                            await db.DiscordRoles.AddAsync(roleToAdd);     
+                            await db.SaveChangesAsync();
+                        }
+
                         await Context.Message.AddReactionAsync(new Emoji("✅"));
                         return;
                     }
@@ -94,7 +112,7 @@ namespace DiscordJunkDrawer.Modules
             return;
         }
 
-        [Command("ikill")]
+        [Command("irm")]
         [Summary("Remove role from server")]
         public async Task DeleteRole([Remainder]string roleName)
         {
@@ -109,6 +127,10 @@ namespace DiscordJunkDrawer.Modules
             {
                 await Context.Message.AddReactionAsync(new Emoji("💩"));
                 return;
+            }
+            if(_roles.Any(x => x.Name == roleName))
+            {
+                await Context.Message.AddReactionAsync(new Emoji("✅"));
             }
             await Context.Message.AddReactionAsync(new Emoji("❓"));
             return;

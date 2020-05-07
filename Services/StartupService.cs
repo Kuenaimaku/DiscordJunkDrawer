@@ -99,7 +99,7 @@ namespace DiscordJunkDrawer.Services
                 if (storedGuild != null)
                 {
                     var allRoles = await db.DiscordRoles.ToListAsync();
-                    var guildRoles = allRoles.FindAll(x => x.ServerId == storedGuild.Id);
+                    var guildRoles = allRoles.Where(x => x.ServerId == storedGuild.Id);
                     db.DiscordRoles.RemoveRange(guildRoles);
                     db.DiscordGuilds.Remove(storedGuild);
                     await db.SaveChangesAsync();

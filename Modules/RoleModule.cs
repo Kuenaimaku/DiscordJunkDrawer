@@ -135,15 +135,32 @@ namespace DiscordJunkDrawer.Modules
             var requiredRole = _roles.FirstOrDefault(r => r.Name == "SuperUser");
 
             var hasPerm = (user as IGuildUser).GuildPermissions.Has(GuildPermission.ManageRoles) || (user as SocketGuildUser).Roles.Contains(requiredRole);
-
             if(blacklist.Contains(roleName))
             {
                 await Context.Message.AddReactionAsync(new Emoji("💩"));
                 return;
             }
-            if(_roles.Any(x => x.Name == roleName))
+            if(hasPerm)
             {
-                await Context.Message.AddReactionAsync(new Emoji("✅"));
+                if(_roles.Any(x => x.Name == roleName))
+                {
+                    try
+                    {
+                        using (var db = new storageContext())
+                        {
+                            var roleToDelete = await db.DiscordRoles.FirstOrDefaultAsync(x => x.Name == roleName);
+                            db.DiscordRoles.Remove(roleToDelete);
+                            await db.SaveChangesAsync();
+                            await requestedRole.DeleteAsync();
+                            await Context.Message.AddReactionAsync(new Emoji("✅"));
+                            return;
+                        }
+                    }
+                    catch
+                    {
+                        await Context.Message.AddReactionAsync(new Emoji("❌"));
+                    }
+                }
             }
             await Context.Message.AddReactionAsync(new Emoji("❓"));
             return;

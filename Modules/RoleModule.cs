@@ -131,11 +131,12 @@ namespace DiscordJunkDrawer.Modules
         {
             var _roles = Context.Guild.Roles;
             var user = Context.User;
+            var blankRole = new GuildPermissions();
             var requestedRole = _roles.FirstOrDefault(r => r.Name == roleName);
             var requiredRole = _roles.FirstOrDefault(r => r.Name == "SuperUser");
 
             var hasPerm = (user as IGuildUser).GuildPermissions.Has(GuildPermission.ManageRoles) || (user as SocketGuildUser).Roles.Contains(requiredRole);
-            if(blacklist.Contains(roleName))
+            if(blacklist.Contains(roleName)|| !requestedRole.Permissions.Equals(blankRole) )
             {
                 await Context.Message.AddReactionAsync(new Emoji("💩"));
                 return;

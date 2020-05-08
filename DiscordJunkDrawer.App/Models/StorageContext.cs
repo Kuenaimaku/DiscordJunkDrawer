@@ -1,11 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace DiscordJunkDrawer.Models
+namespace DiscordJunkDrawer.App.Models
 {
-    public class storageContext : DbContext
+    public class StorageContext : DbContext
     {
 
         public DbSet<DiscordGuildModel> DiscordGuilds { get; set; }

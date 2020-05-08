@@ -3,9 +3,9 @@ using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 using System;
-using DiscordJunkDrawer.Modules;
+using DiscordJunkDrawer.App.Modules;
 
-namespace DiscordJunkDrawer.Services
+namespace DiscordJunkDrawer.App.Services
 {
     public class CommandHandler
     {

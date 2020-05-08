@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace DiscordJunkDrawer.Services
+namespace DiscordJunkDrawer.App.Services
 {
     public class LoggingService
     {

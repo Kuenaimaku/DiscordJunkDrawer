@@ -6,12 +6,21 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using DiscordJunkDrawer.Models;
+using DiscordJunkDrawer.App.Models;
+using DiscordJunkDrawer.App.Interfaces;
 
-namespace DiscordJunkDrawer.Modules
+namespace DiscordJunkDrawer.App.Modules
 {
     public class RoleModule: ModuleBase<SocketCommandContext>
     {
+        private readonly IRepository<DiscordRoleModel> _roleRepository;
+        private readonly IRepository<DiscordGuildModel> _guildRepository;
+        public RoleModule(IRepository<DiscordRoleModel> roleRepository, IRepository<DiscordGuildModel> guildRepository) : base()
+        {
+            _roleRepository = roleRepository;
+            _guildRepository = guildRepository;
+        }
+
         List<string> blacklist = new List<string>(){"SuperUser"};
 
         [Command("iam")]
@@ -62,24 +71,18 @@ namespace DiscordJunkDrawer.Modules
             {
                 try
                 {
-                    using (var db = new storageContext())
+                    var curGuild = await _guildRepository.GetAsync(guild => guild.Id == Context.Guild.Id);
+                    var createdRole = await Context.Guild.CreateRoleAsync(roleName, GuildPermissions.None, null, false, null);
+
+                    DiscordRoleModel roleToAdd = new DiscordRoleModel()
                     {
-                        var storedGuilds = await db.DiscordGuilds.ToListAsync();
-                        var curGuild = storedGuilds.Find(guild => guild.Id == Context.Guild.Id);
-                        var createdRole = await Context.Guild.CreateRoleAsync(roleName, GuildPermissions.None, null, false, null);
-
-                        DiscordRoleModel roleToAdd = new DiscordRoleModel()
-                        {
-                            Id = createdRole.Id,
-                            Name = roleName,
-                            ServerId = Context.Guild.Id
-                        };
-                        curGuild.Roles.Add(roleToAdd);    
-                        
-                        await db.DiscordRoles.AddAsync(roleToAdd);     
-                        await db.SaveChangesAsync();
-                    }
-
+                        Id = createdRole.Id,
+                        Name = roleName,
+                        ServerId = Context.Guild.Id
+                    };
+                    curGuild.Roles.Add(roleToAdd);
+                    await _guildRepository.UpdateAsync(curGuild);
+                    await _roleRepository.AddAsync(roleToAdd);
                     await Context.Message.AddReactionAsync(new Emoji("✅"));
                     return;
                 }
@@ -147,15 +150,13 @@ namespace DiscordJunkDrawer.Modules
                 {
                     try
                     {
-                        using (var db = new storageContext())
-                        {
-                            var roleToDelete = await db.DiscordRoles.FirstOrDefaultAsync(x => x.Name == roleName);
-                            db.DiscordRoles.Remove(roleToDelete);
-                            await db.SaveChangesAsync();
-                            await requestedRole.DeleteAsync();
-                            await Context.Message.AddReactionAsync(new Emoji("✅"));
-                            return;
-                        }
+
+                        var roleToDelete = await _roleRepository.GetAsync(x => x.Name == roleName);
+                        await _roleRepository.RemoveAsync(roleToDelete);
+                        await requestedRole.DeleteAsync();
+                        await Context.Message.AddReactionAsync(new Emoji("✅"));
+                        return;
+
                     }
                     catch
                     {

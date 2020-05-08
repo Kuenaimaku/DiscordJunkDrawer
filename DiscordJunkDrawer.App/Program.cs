@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace DiscordJunkDrawer
+namespace DiscordJunkDrawer.App
 {
     class Program
     {

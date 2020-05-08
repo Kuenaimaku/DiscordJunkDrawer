@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace DiscordJunkDrawer.Migrations
+namespace DiscordJunkDrawer.App.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -10,7 +10,7 @@ namespace DiscordJunkDrawer.Migrations
                 name: "DiscordGuilds",
                 columns: table => new
                 {
-                    Id = table.Column<uint>(nullable: false)
+                    Id = table.Column<ulong>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(nullable: true)
                 },
@@ -23,11 +23,11 @@ namespace DiscordJunkDrawer.Migrations
                 name: "DiscordRoles",
                 columns: table => new
                 {
-                    Id = table.Column<uint>(nullable: false)
+                    Id = table.Column<ulong>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    ServerId = table.Column<uint>(nullable: false),
+                    ServerId = table.Column<ulong>(nullable: false),
                     Name = table.Column<string>(nullable: true),
-                    DiscordGuildModelId = table.Column<uint>(nullable: true)
+                    DiscordGuildModelId = table.Column<ulong>(nullable: true)
                 },
                 constraints: table =>
                 {

@@ -5,10 +5,13 @@ using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using DiscordJunkDrawer.Services;
-using DiscordJunkDrawer.Modules;
+using DiscordJunkDrawer.App.Services;
+using DiscordJunkDrawer.App.Modules;
+using DiscordJunkDrawer.App.Models;
+using Microsoft.EntityFrameworkCore;
+using DiscordJunkDrawer.App.Interfaces;
 
-namespace DiscordJunkDrawer
+namespace DiscordJunkDrawer.App
 {
     public class Startup
     {
@@ -44,7 +47,8 @@ namespace DiscordJunkDrawer
 
         private void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
+            services.AddDbContext<StorageContext>(options => options.UseSqlite("Data Source = data.db"))
+                .AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
             {                                       // Add discord to the collection
                 LogLevel = LogSeverity.Verbose,     // Tell the logger to give Verbose amount of info
                 MessageCacheSize = 1000             // Cache 1,000 messages per channel
@@ -54,10 +58,11 @@ namespace DiscordJunkDrawer
                 LogLevel = LogSeverity.Verbose,     // Tell the logger to give Verbose amount of info
                 DefaultRunMode = RunMode.Async,     // Force all commands to run async by default
             }))
+            .AddSingleton<IRepository<DiscordRoleModel>>() //add dataSource for discordGuilds to the collection
+            .AddSingleton<IRepository<DiscordGuildModel>>()
             .AddSingleton<CommandHandler>()         // Add the command handler to the collection
             .AddSingleton<StartupService>()         // Add startupservice to the collection
             .AddSingleton<LoggingService>()         // Add loggingservice to the collection
-            .AddSingleton<Random>()                 // Add random to the collection
             .AddSingleton(Configuration);           // Add the configuration to the collection
         }
     }

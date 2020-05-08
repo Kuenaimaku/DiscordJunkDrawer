@@ -10,6 +10,7 @@ using DiscordJunkDrawer.App.Modules;
 using DiscordJunkDrawer.App.Models;
 using Microsoft.EntityFrameworkCore;
 using DiscordJunkDrawer.App.Interfaces;
+using DiscordJunkDrawer.App.Repositories;
 
 namespace DiscordJunkDrawer.App
 {
@@ -47,7 +48,7 @@ namespace DiscordJunkDrawer.App
 
         private void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<StorageContext>(options => options.UseSqlite("Data Source = data.db"))
+            services.AddDbContext<StorageContext>()
                 .AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
             {                                       // Add discord to the collection
                 LogLevel = LogSeverity.Verbose,     // Tell the logger to give Verbose amount of info
@@ -58,8 +59,8 @@ namespace DiscordJunkDrawer.App
                 LogLevel = LogSeverity.Verbose,     // Tell the logger to give Verbose amount of info
                 DefaultRunMode = RunMode.Async,     // Force all commands to run async by default
             }))
-            .AddSingleton<IRepository<DiscordRoleModel>>() //add dataSource for discordGuilds to the collection
-            .AddSingleton<IRepository<DiscordGuildModel>>()
+            .AddSingleton<IRepository<DiscordRoleModel>, DiscordRoleRepository>() //add dataSource for discordGuilds to the collection
+            .AddSingleton<IRepository<DiscordGuildModel>, DiscordGuildRepository>()
             .AddSingleton<CommandHandler>()         // Add the command handler to the collection
             .AddSingleton<StartupService>()         // Add startupservice to the collection
             .AddSingleton<LoggingService>()         // Add loggingservice to the collection

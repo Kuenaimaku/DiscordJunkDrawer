@@ -2,7 +2,7 @@
 
 namespace DiscordJunkDrawer.App.Migrations
 {
-    public partial class init : Migration
+    public partial class lazyloading : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -25,25 +25,24 @@ namespace DiscordJunkDrawer.App.Migrations
                 {
                     Id = table.Column<ulong>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    ServerId = table.Column<ulong>(nullable: false),
                     Name = table.Column<string>(nullable: true),
-                    DiscordGuildModelId = table.Column<ulong>(nullable: true)
+                    GuildId = table.Column<ulong>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_DiscordRoles", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DiscordRoles_DiscordGuilds_DiscordGuildModelId",
-                        column: x => x.DiscordGuildModelId,
+                        name: "FK_DiscordRoles_DiscordGuilds_GuildId",
+                        column: x => x.GuildId,
                         principalTable: "DiscordGuilds",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_DiscordRoles_DiscordGuildModelId",
+                name: "IX_DiscordRoles_GuildId",
                 table: "DiscordRoles",
-                column: "DiscordGuildModelId");
+                column: "GuildId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

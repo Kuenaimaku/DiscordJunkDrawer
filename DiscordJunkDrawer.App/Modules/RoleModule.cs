@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using DiscordJunkDrawer.App.Models;
 using DiscordJunkDrawer.App.Interfaces;
+using DiscordJunkDrawer.App.Services;
+using Discord.Rest;
 
 namespace DiscordJunkDrawer.App.Modules
 {
@@ -67,21 +69,32 @@ namespace DiscordJunkDrawer.App.Modules
             
             var hasPerm = (user as IGuildUser).GuildPermissions.Has(GuildPermission.ManageRoles) || (user as SocketGuildUser).Roles.Contains(requiredRole);
 
-            if(hasPerm)
+            if(hasPerml)
             {
                 try
                 {
                     var curGuild = await _guildRepository.GetAsync(guild => guild.Id == Context.Guild.Id);
-                    var createdRole = await Context.Guild.CreateRoleAsync(roleName, GuildPermissions.None, null, false, null);
-
-                    DiscordRoleModel roleToAdd = new DiscordRoleModel()
+                    DiscordRoleModel roleToAdd = null;
+                    if (requestedRole == null)
                     {
-                        Id = createdRole.Id,
-                        Name = roleName,
-                        ServerId = Context.Guild.Id
-                    };
-                    curGuild.Roles.Add(roleToAdd);
-                    await _guildRepository.UpdateAsync(curGuild);
+                        var createdRole = await Context.Guild.CreateRoleAsync(roleName, GuildPermissions.None, null, false, null);
+                        roleToAdd = new DiscordRoleModel()
+                        {
+                            Id = createdRole.Id,
+                            Name = roleName,
+                            GuildId = Context.Guild.Id
+                        };
+                    }
+                    else
+                    {
+                        roleToAdd = new DiscordRoleModel()
+                        {
+                            Id = requestedRole.Id,
+                            Name = roleName,
+                            GuildId = Context.Guild.Id
+                        };
+                    }
+
                     await _roleRepository.AddAsync(roleToAdd);
                     await Context.Message.AddReactionAsync(new Emoji("✅"));
                     return;

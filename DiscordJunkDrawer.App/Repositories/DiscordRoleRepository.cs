@@ -38,7 +38,7 @@ namespace DiscordJunkDrawer.App.Repositories
 
         public async Task AddAsync(DiscordRoleModel value)
         {
-            var alreadyAdded = await _context.DiscordRoles.AsQueryable().AnyAsync(x => x.Id == value.Id && x.ServerId == value.ServerId);
+            var alreadyAdded = await _context.DiscordRoles.AsQueryable().AnyAsync(x => x.Id == value.Id && x.GuildId == value.GuildId);
             if (!alreadyAdded)
             {
                 await _context.DiscordRoles.AddAsync(value);
@@ -50,7 +50,7 @@ namespace DiscordJunkDrawer.App.Repositories
         {
             foreach(var item in value)
             {
-                var alreadyAdded = await _context.DiscordRoles.AsQueryable().AnyAsync(x => x.Id == item.Id && x.ServerId == item.ServerId);
+                var alreadyAdded = await _context.DiscordRoles.AsQueryable().AnyAsync(x => x.Id == item.Id && x.GuildId == item.GuildId);
                 if (!alreadyAdded)
                 {
                     await _context.DiscordRoles.AddAsync(item);
@@ -62,7 +62,7 @@ namespace DiscordJunkDrawer.App.Repositories
 
         public async Task RemoveAsync(DiscordRoleModel value)
         {
-            var storedLocally = await _context.DiscordRoles.AsQueryable().AnyAsync(x => x.Id == value.Id && x.ServerId == value.ServerId);
+            var storedLocally = await _context.DiscordRoles.AsQueryable().AnyAsync(x => x.Id == value.Id && x.GuildId == value.GuildId);
             if (storedLocally)
             {
                 _context.DiscordRoles.Remove(value);
@@ -75,7 +75,7 @@ namespace DiscordJunkDrawer.App.Repositories
         {
             foreach (var item in value)
             {
-                var storedLocally = await _context.DiscordRoles.AsQueryable().AnyAsync(x => x.Id == item.Id && x.ServerId == item.ServerId);
+                var storedLocally = await _context.DiscordRoles.AsQueryable().AnyAsync(x => x.Id == item.Id && x.GuildId == item.GuildId);
                 if (storedLocally)
                 {
                      _context.DiscordRoles.Remove(item);
@@ -87,7 +87,7 @@ namespace DiscordJunkDrawer.App.Repositories
 
         public async Task UpdateAsync(DiscordRoleModel value)
         {
-            var result = await _context.DiscordRoles.AsQueryable().FirstOrDefaultAsync(x => x.Id == value.Id && x.ServerId == value.ServerId);
+            var result = await _context.DiscordRoles.AsQueryable().FirstOrDefaultAsync(x => x.Id == value.Id && x.GuildId == value.GuildId);
             if (result != null)
             {
                 result = value;

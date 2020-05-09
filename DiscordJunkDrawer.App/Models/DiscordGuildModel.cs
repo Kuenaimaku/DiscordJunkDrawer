@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DiscordJunkDrawer.App.Models
 {
@@ -8,6 +7,8 @@ namespace DiscordJunkDrawer.App.Models
     {
         public ulong Id { get; set; }
         public string Name { get; set; }
-        public List<DiscordRoleModel> Roles { get; } = new List<DiscordRoleModel>();
+
+        [ForeignKey("GuildId")]
+        public virtual List<DiscordRoleModel> Roles { get; set; } = new List<DiscordRoleModel>();
     }
 }

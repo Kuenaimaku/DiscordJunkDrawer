@@ -9,6 +9,9 @@ namespace DiscordJunkDrawer.App.Models
         public DbSet<DiscordRoleModel> DiscordRoles { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
-            => options.UseSqlite("Data Source=data.db");
+        {
+            options.UseSqlite("Data Source=data.db");
+            options.UseLazyLoadingProxies();
+        }
     }
 }

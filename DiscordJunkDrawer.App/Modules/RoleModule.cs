@@ -71,19 +71,21 @@ namespace DiscordJunkDrawer.App.Modules
             {
                 try
                 {
-                    var curGuild = await _guildRepository.GetAsync(guild => guild.Id == Context.Guild.Id);
                     var createdRole = await Context.Guild.CreateRoleAsync(roleName, GuildPermissions.None, null, false, null);
-
+                    await Context.Message.AddReactionAsync(new Emoji("✅"));
+                    
+                    var curGuild = await _guildRepository.GetAsync(guild => guild.Id == Context.Guild.Id);
                     DiscordRoleModel roleToAdd = new DiscordRoleModel()
                     {
                         Id = createdRole.Id,
                         Name = roleName,
                         ServerId = Context.Guild.Id
                     };
+                    
                     curGuild.Roles.Add(roleToAdd);
                     await _guildRepository.UpdateAsync(curGuild);
                     await _roleRepository.AddAsync(roleToAdd);
-                    await Context.Message.AddReactionAsync(new Emoji("✅"));
+                    await Context.Message.AddReactionAsync(new Emoji("🗄️"));
                     return;
                 }
                 catch
@@ -150,17 +152,19 @@ namespace DiscordJunkDrawer.App.Modules
                 {
                     try
                     {
+                        await requestedRole.DeleteAsync();
+                        await Context.Message.AddReactionAsync(new Emoji("✅"));
 
                         var roleToDelete = await _roleRepository.GetAsync(x => x.Name == roleName);
                         await _roleRepository.RemoveAsync(roleToDelete);
-                        await requestedRole.DeleteAsync();
-                        await Context.Message.AddReactionAsync(new Emoji("✅"));
+                        await Context.Message.AddReactionAsync(new Emoji("🗄️"));
                         return;
 
                     }
                     catch
                     {
                         await Context.Message.AddReactionAsync(new Emoji("❌"));
+                        return;
                     }
                 }
             }

@@ -23,7 +23,7 @@ namespace DiscordJunkDrawer.App.Modules
             _guildRepository = guildRepository;
         }
 
-        List<string> blacklist = new List<string>(){"SuperUser"};
+        private readonly List<string> blacklist = new List<string>(){"SuperUser"};
 
         [Command("iam")]
         [Summary("Assign a role to yourself.")]
@@ -69,7 +69,7 @@ namespace DiscordJunkDrawer.App.Modules
             
             var hasPerm = (user as IGuildUser).GuildPermissions.Has(GuildPermission.ManageRoles) || (user as SocketGuildUser).Roles.Contains(requiredRole);
 
-            if(hasPerml)
+            if(hasPerm)
             {
                 try
                 {

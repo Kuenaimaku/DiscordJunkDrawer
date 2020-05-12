@@ -11,6 +11,7 @@ using DiscordJunkDrawer.App.Models;
 using Microsoft.EntityFrameworkCore;
 using DiscordJunkDrawer.App.Interfaces;
 using DiscordJunkDrawer.App.Repositories;
+using Discord.Addons.Interactive;
 
 namespace DiscordJunkDrawer.App
 {
@@ -64,6 +65,7 @@ namespace DiscordJunkDrawer.App
             .AddSingleton<CommandHandler>()         // Add the command handler to the collection
             .AddSingleton<StartupService>()         // Add startupservice to the collection
             .AddSingleton<LoggingService>()         // Add loggingservice to the collection
+            .AddSingleton<InteractiveService>()     // Add InteractiveService to the collection (Pagination)
             .AddSingleton(Configuration);           // Add the configuration to the collection
         }
     }
